@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>chudQ</title>
+<link rel="icon" href="icon.png">
+<!-- chudq.lol's fonts; without the internet the system's stand in -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oxanium:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* chudq.lol's theme (squad/frontend/src/index.css): ink, hex (teal) for actions, gold for the brand */
+  :root { --bg: #05070c; --field: #080b13; --card: rgb(11 15 26 / .8); --line: rgb(255 255 255 / .08); --ink: #e3e7f1; --ink2: #b7bfd2;
+          --dim: #8892ab; --faint: #56617d; --gold: #f6c552; --gold-d: #a8741a; --hex: #4fe3d8; --hex5: #22c7bd;
+          --loss: #ff5468; --win: #3d9bff; --display: "Oxanium", "Inter", "Segoe UI", sans-serif; }
+  * { box-sizing: border-box; }
+  html { color-scheme: dark; background: var(--bg); }
+  body { margin: 0; color: var(--ink); font: 14px/1.45 "Inter", "Segoe UI", system-ui, sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh;
+    background: radial-gradient(700px 400px at 15% -10%, rgb(34 199 189 / .08), transparent 60%),
+                radial-gradient(600px 350px at 100% 0%, rgb(246 197 82 / .06), transparent 60%), var(--bg); }
+  ::selection { background: rgb(79 227 216 / .3); }
+  * { scrollbar-width: thin; scrollbar-color: #212a41 transparent; }
+  main { padding: 18px 18px 24px; max-width: 520px; margin: 0 auto; }
+  header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  header img { width: 32px; height: 32px; }
+  header h1 { font: 800 22px/1 var(--display); margin: 0; letter-spacing: .02em; }
+  header h1 b { background: linear-gradient(180deg, #fff0bf, var(--gold) 55%, var(--gold-d)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  header .who { margin-left: auto; color: var(--dim); font-size: 12px; text-align: right; }
+  section { background: var(--card); border: 1px solid rgb(255 255 255 / .06); border-radius: 16px; padding: 12px 16px; margin-bottom: 12px;
+    box-shadow: 0 1px 0 rgb(255 255 255 / .03) inset, 0 20px 40px -24px rgb(0 0 0 / .6); }
+  h2 { font: 600 15px/1.3 var(--display); letter-spacing: .03em; color: var(--ink); margin: 2px 0 8px; }
+  .line { display: flex; align-items: center; gap: 9px; padding: 5px 0; }
+  .line .txt { flex: 1; min-width: 0; }
+  .line small { display: block; color: var(--faint); font-size: 12px; overflow-wrap: anywhere; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--faint); flex: none; }
+  .dot.ok { background: var(--hex); } .dot.live { background: var(--loss); box-shadow: 0 0 8px var(--loss); }
+  .dot.warn { background: var(--gold); } .dot.bad { background: var(--loss); }
+  .dot.ok { box-shadow: 0 0 8px rgb(79 227 216 / .5); }
+  label.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid rgb(255 255 255 / .05); }
+  label.row:first-of-type { border-top: 0; }
+  input[type=text], input[type=password] { width: 100%; background: var(--field); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 12px; padding: 8px 12px; font: inherit; transition: border-color .15s, box-shadow .15s; }
+  input::placeholder { color: var(--faint); }
+  /* A dropdown of our own: a <select>'s open list is drawn by Windows and can't be themed */
+  .dd { position: relative; }
+  .dd-btn { display: flex; align-items: center; gap: 8px; background: var(--field); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 12px; padding: 7px 11px 7px 12px; font-weight: 600; }
+  .dd-btn:hover:not(:disabled) { background: var(--field); border-color: rgb(255 255 255 / .15); }
+  .dd-btn svg { color: var(--dim); transition: transform .15s; }
+  .dd.open .dd-btn { border-color: rgb(34 199 189 / .6); box-shadow: 0 0 0 3px rgb(34 199 189 / .2); }
+  .dd.open .dd-btn svg { transform: rotate(180deg); }
+  .dd-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; min-width: 100%; padding: 4px;
+    background: #0f1422; border: 1px solid rgb(255 255 255 / .1); border-radius: 12px; box-shadow: 0 16px 40px -8px rgb(0 0 0 / .7); }
+  .dd-menu button { display: flex; align-items: center; gap: 10px; width: 100%; white-space: nowrap; text-align: left;
+    background: transparent; color: var(--ink2); border-radius: 8px; padding: 7px 10px; font-weight: 500; }
+  .dd-menu button:hover:not(:disabled) { background: rgb(255 255 255 / .06); color: var(--ink); }
+  .dd-menu button small { margin-left: auto; color: var(--faint); font-size: 12px; }
+  .dd-menu button::after { content: ""; width: 14px; flex: none; }
+  .dd-menu button.on { color: var(--hex); }
+  .dd-menu button.on::after { content: "✓"; color: var(--hex); font-weight: 700; }
+  input:focus { outline: none; border-color: rgb(34 199 189 / .6); box-shadow: 0 0 0 3px rgb(34 199 189 / .2); }
+  .field { margin-bottom: 9px; }
+  button { background: var(--hex5); color: var(--bg); border: 0; border-radius: 12px; padding: 8px 14px; font: inherit; font-weight: 600; cursor: pointer; transition: background .15s, color .15s; }
+  button:hover:not(:disabled) { background: var(--hex); }
+  button.ghost { background: rgb(255 255 255 / .03); color: var(--ink2); border: 1px solid var(--line); }
+  button.ghost:hover:not(:disabled) { background: rgb(255 255 255 / .07); color: var(--ink); }
+  button:disabled { opacity: .6; cursor: default; }
+  .switch { position: relative; width: 40px; height: 22px; flex: none; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch span { position: absolute; inset: 0; background: #212a41; border-radius: 11px; transition: .15s; cursor: pointer; }
+  .switch span::after { content: ""; position: absolute; left: 3px; top: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--dim); transition: .15s; }
+  .switch input:checked + span { background: rgb(34 199 189 / .35); box-shadow: 0 0 12px rgb(79 227 216 / .2); }
+  .switch input:checked + span::after { left: 21px; background: var(--hex); }
+  #toggles { padding: 4px 14px; }
+  #toggles label.row { padding: 12px 0; font-size: 16px; font-weight: 600; cursor: pointer; }
+  #toggles .help { font-weight: 400; }
+  #toggles .switch { width: 52px; height: 28px; }
+  #toggles .switch span { border-radius: 14px; }
+  #toggles .switch span::after { width: 22px; height: 22px; }
+  #toggles .switch input:checked + span::after { left: 27px; }
+  .err { color: var(--loss); font-size: 13px; margin-top: 6px; min-height: 1em; }
+  .help { color: var(--faint); font-size: 12px; }
+  a { color: var(--hex); cursor: pointer; text-decoration: none; } a:hover { text-decoration: underline; }
+  .obspath { display: flex; gap: 6px; margin-top: 6px; } .obspath button { padding: 6px 10px; }
+  footer { color: var(--faint); font-size: 11px; text-align: center; margin-top: 6px; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .tabs button { flex: 1; background: rgb(255 255 255 / .03); color: var(--ink2); border: 1px solid rgb(255 255 255 / .07); font-weight: 500; }
+  .tabs button:hover { background: rgb(255 255 255 / .06); color: var(--ink); }
+  .tabs button.on { background: rgb(34 199 189 / .15); color: var(--hex); border-color: rgb(34 199 189 / .5); }
+  .note { border-color: rgb(246 197 82 / .3); background: rgb(246 197 82 / .06); }
+  .note p { margin: 0 0 8px; }
+  .riot { color: var(--gold); font-weight: 700; }
+  .update { border-color: rgb(34 199 189 / .45); background: rgb(34 199 189 / .08); }
+  .update .head { display: flex; align-items: center; gap: 12px; }
+  .update .txt { flex: 1; } .update small { display: block; color: var(--dim); font-size: 12px; }
+  .whatsnew { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgb(79 227 216 / .2); max-height: 180px; overflow-y: auto; }
+  .whatsnew h3 { margin: 8px 0 3px; font-size: 12px; color: var(--hex); font-weight: 700; } .whatsnew h3:first-child { margin-top: 0; }
+  .whatsnew h3 span { color: var(--faint); font-weight: 400; margin-left: 6px; }
+  .whatsnew ul { margin: 0; padding-left: 18px; font-size: 12.5px; } .whatsnew li { margin: 2px 0; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="icon.png" alt="">
+    <h1>chud<b>Q</b></h1>
+    <div class="who" id="who"></div>
+  </header>
+
+  <!-- A newer version on chudq.lol: what it adds, and one click installs it -->
+  <section id="update" class="update" hidden>
+    <div class="head"><div class="txt"><b id="updTitle">Update available</b><small id="updMsg"></small></div>
+      <button id="updBtn">Update now</button></div>
+    <div class="whatsnew" id="whatsNew" hidden></div>
+  </section>
+
+  <!-- The first start after an update: it worked, and what it brought -->
+  <section id="updated" class="update" hidden>
+    <div class="head"><div class="txt"><b id="updatedTitle"></b><small>chudQ updated itself</small></div>
+      <button class="ghost" id="updatedOk">OK</button></div>
+    <div class="whatsnew" id="updatedNew" hidden></div>
+  </section>
+
+  <!-- Logged out: log in, or sign up with the League account the client is logged in to -->
+  <section id="login" hidden>
+    <div class="tabs"><button id="tabLogin" class="on" type="button">Log in</button><button id="tabSignup" type="button">Sign up</button></div>
+    <form id="loginForm">
+      <div class="field"><input type="text" id="name" placeholder="chudq name" autocomplete="username" required></div>
+      <div class="field"><input type="password" id="password" placeholder="Password" autocomplete="current-password" required></div>
+      <button type="submit" id="loginBtn">Log in</button>
+      <div class="err" id="loginErr"></div>
+    </form>
+    <div class="help" id="signupHelp" hidden></div>
+    <div class="help" id="loginHelp">While you're logged in and playing, chudQ sends your game's live data (champions, items, scores, kills) to <a data-open="site">chudq.lol</a>.</div>
+  </section>
+
+  <!-- Proving a League account (signing up, or adding one): chudQ sets an icon for a moment -->
+  <section id="proof" class="note" hidden>
+    <p id="proofMsg"></p>
+    <button id="joinBtn" hidden>Ask to join the squad</button>
+    <div class="help" id="proofHelp"></div>
+  </section>
+
+  <!-- Logged in, but League is on an account that isn't theirs (yet) -->
+  <section id="notConnected" class="note" hidden>
+    <p><span class="riot" id="ncId"></span> isn't on your chudq account, so its games aren't sent or streamed.</p>
+    <button id="addBtn">Add it to my account</button>
+    <div class="help">chudQ proves it's yours by setting a starter profile icon for a moment, then puts yours back.</div>
+    <div class="err" id="addErr"></div>
+  </section>
+
+  <section id="pending" class="note" hidden>
+    <p>Waiting for the admin to let you into the squad. Until then nothing is sent or streamed.</p>
+  </section>
+
+  <!-- The two things the app does, on and off (the tray's menu has the same switches) -->
+  <section id="toggles" hidden>
+    <label class="row"><span>Send live game data<br><span class="help">Champions, items, scores and kills, to chudq.lol while you play</span></span>
+      <span class="switch"><input type="checkbox" id="sendLive"><span></span></span></label>
+    <label class="row"><span>Stream my games<br><span class="help">Through OBS, while a game is on; only logged-in squad members can watch</span></span>
+      <span class="switch"><input type="checkbox" id="stream"><span></span></span></label>
+    <div class="err" id="toggleErr"></div>
+  </section>
+
+  <section id="status">
+    <h2>Status</h2>
+    <div class="line"><span class="dot" id="dClient"></span><div class="txt" id="tClient"></div></div>
+    <div class="line"><span class="dot" id="dGame"></span><div class="txt" id="tGame"></div></div>
+    <div class="line"><span class="dot" id="dSend"></span><div class="txt" id="tSend"></div></div>
+    <div class="line"><span class="dot" id="dObs"></span><div class="txt" id="tObs"></div></div>
+  </section>
+
+  <section id="settings" hidden>
+    <h2>Stream settings</h2>
+    <div class="row" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0"><span>Quality</span>
+      <div class="dd" id="presetDd">
+        <button type="button" class="dd-btn" id="presetBtn" aria-haspopup="listbox"><span id="presetLabel"></span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="dd-menu" id="presetMenu" role="listbox" hidden>
+          <button type="button" data-v="720p30">720p · 30 fps<small>2.5 Mbps</small></button>
+          <button type="button" data-v="720p60">720p · 60 fps<small>4 Mbps</small></button>
+          <button type="button" data-v="1080p60">1080p · 60 fps<small>6 Mbps</small></button>
+        </div>
+      </div></div>
+    <label class="row"><span>All PC sound<br><span class="help">Off: only the game's sound. On: the game's sound plus everything else you hear (Discord, music)</span></span>
+      <span class="switch"><input type="checkbox" id="otherAudio"><span></span></span></label>
+    <label class="row"><span>Microphone<br><span class="help">Your default mic, in the stream</span></span>
+      <span class="switch"><input type="checkbox" id="mic"><span></span></span></label>
+    <div class="row" style="padding:8px 0;border-top:1px solid rgb(255 255 255 / .05)">
+      <div>OBS</div>
+      <div class="obspath"><input type="text" id="obsPath" spellcheck="false"><button class="ghost" id="obsSave">Save</button></div>
+      <div class="help" id="obsHelp"></div>
+    </div>
+    <label class="row"><span>Start with Windows</span>
+      <span class="switch"><input type="checkbox" id="logon"><span></span></span></label>
+    <div class="err" id="setErr"></div>
+  </section>
+
+  <section id="account" hidden>
+    <div class="line"><div class="txt" id="acct"></div><button class="ghost" id="logout">Log out</button></div>
+  </section>
+  <footer><span id="footVer"></span> · <a id="checkUpd">Check for updates</a> <span id="upToDate"></span></footer>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let st = null, editing = false;
+
+async function post(path, body) {
+  const r = await fetch(path, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body || {})});
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+  return data;
+}
+
+function line(dot, txt, cls, html) { $(dot).className = "dot " + (cls || ""); $(txt).innerHTML = html; }
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+function ago(t) { const s = Math.max(0, Math.round(st.now - t)); return s < 60 ? `${s}s ago` : `${Math.round(s / 60)} min ago`; }
+
+const changeList = list => list.map(c => `<h3>What's new in ${esc(c.version)}<span>${esc(c.date)}</span></h3><ul>${c.changes.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`).join("");
+let updatedSeen = false;
+
+function render() {
+  const L = st.league || {}, S = st.stream || {};
+  $("login").hidden = st.loggedIn;
+  const P = st.proof || {};
+  $("proof").hidden = !P.state || P.state === "done" && st.loggedIn && !st.notConnected;
+  $("proofMsg").textContent = P.message || "";
+  $("proofMsg").style.color = P.state === "error" ? "var(--loss)" : "";
+  $("joinBtn").hidden = P.state !== "choose";
+  $("proofHelp").textContent = P.state === "choose" ? "Or log in to League with one of your squad accounts and sign up again." :
+    P.state === "working" ? "Your profile icon changes for a moment; chudQ puts it back." : "";
+  $("notConnected").hidden = !st.loggedIn || !st.notConnected || !st.player || st.proving;
+  $("ncId").textContent = st.notConnected || "";
+  $("pending").hidden = !st.loggedIn || !!st.player;
+  const acct = st.leagueAccount;
+  $("signupHelp").innerHTML = acct ? `Signs up with the League account you're logged in to: <span class="riot">${esc(acct)}</span>. chudQ proves it's yours by setting a starter profile icon for a moment, then puts yours back.`
+    : "Open League and log in first: signing up uses the account the client is logged in to.";
+  $("settings").hidden = $("account").hidden = $("toggles").hidden = !st.loggedIn;
+  $("who").textContent = st.loggedIn ? st.name : "";
+  $("acct").innerHTML = `Logged in as <b>${esc(st.name)}</b><small>${(st.accounts || []).map(esc).join(" · ") || esc(st.server)}</small>`;
+  const U0 = st.update || {};
+  $("footVer").textContent = `chudQ ${st.version}`;
+  $("checkUpd").textContent = checking ? "Checking…" : U0.available ? "Update available" : "Check for updates";
+  $("upToDate").textContent = !checking && justChecked && !U0.available ? "· up to date" : "";
+
+  line("dClient", "tClient", L.client ? "ok" : "", L.client ? "League client open" : "League client isn't open");
+  line("dGame", "tGame", L.inGame || L.champSelect ? "ok" : "",
+       L.inGame ? (L.loaded ? `In game${L.champion ? " · " + esc(L.champion) : ""}` : "Game loading")
+                : L.champSelect ? "In champ select" : "Not in a game");
+  if (!st.loggedIn) line("dSend", "tSend", "", "Live data: log in to send it");
+  else if (!st.settings.send_live) line("dSend", "tSend", "", "Live data: off");
+  else if (L.error && L.inGame) line("dSend", "tSend", "bad", `Live data not sent<small>${esc(L.error)}</small>`);
+  else if ((L.inGame || L.champSelect) && st.lastPost) line("dSend", "tSend", "ok", `Sending live data<small>last ${ago(st.lastPost)} · ${L.posts} sent</small>`);
+  else line("dSend", "tSend", "", `Live data: sent while you play`);
+
+  const cls = {live: "live", ready: "ok", starting: "warn", skipped: "warn", busy: "warn", error: "bad", "no-obs": "bad", "old-obs": "bad"}[S.state] || "";
+  let msg = esc(S.message || "Streaming is off");
+  if (S.state === "no-obs" || S.state === "old-obs") msg += ` · <a data-open="obs">get OBS</a>`;
+  const sub = S.obs && S.obs.version ? `OBS ${esc(S.obs.version)}${S.encoder ? " · " + esc(S.encoder) : ""}` : "";
+  line("dObs", "tObs", cls, msg + (sub ? `<small>${sub}</small>` : ""));
+
+  const U = st.update || {}, news = U.changes || [];
+  $("update").hidden = !U.available && !["downloading", "installing", "error"].includes(U.state);
+  $("updTitle").textContent = U.state === "error" ? "Update failed" : `chudQ ${U.latest || ""} is out`;
+  $("updMsg").textContent = U.message || `You have ${st.version}. Takes a few seconds; chudQ opens again by itself.`;
+  $("updBtn").disabled = ["downloading", "installing"].includes(U.state);
+  $("updBtn").textContent = U.state === "error" ? "Try again" : $("updBtn").disabled ? "Updating…" : "Update now";
+  $("whatsNew").hidden = !news.length;
+  $("whatsNew").innerHTML = changeList(news);
+  const D = U.updated;
+  $("updated").hidden = !D || updatedSeen;
+  if (D) {
+    $("updatedTitle").textContent = `Updated to ${D.to} ✓`;
+    $("updatedNew").hidden = !D.changes.length;
+    $("updatedNew").innerHTML = changeList(D.changes);
+  }
+
+  if (!editing) {
+    const s = st.settings;
+    $("sendLive").checked = s.send_live; $("stream").checked = s.stream; showPreset(s.preset); $("mic").checked = s.mic; $("otherAudio").checked = s.other_audio; $("logon").checked = s.start_at_logon;
+    if (document.activeElement !== $("obsPath")) $("obsPath").value = (S.obs && S.obs.path) || s.obs_path;
+  }
+  $("obsHelp").innerHTML = S.obs && S.obs.path ? "" : `OBS Studio 30 or newer is needed to stream. <a data-open="obs">Download OBS</a>, then come back.`;
+}
+
+async function refresh() {
+  try { st = await (await fetch("/api/status")).json(); render(); } catch (e) {}
+}
+
+async function setting(body, err = "setErr") {
+  $(err).textContent = "";
+  editing = true;
+  try { st = await post("/api/settings", body); } catch (e) { $(err).textContent = e.message; }
+  editing = false;
+  render();
+}
+
+let signingUp = false;
+function tab(signup) {
+  signingUp = signup;
+  $("tabLogin").classList.toggle("on", !signup); $("tabSignup").classList.toggle("on", signup);
+  $("loginBtn").textContent = signup ? "Sign up" : "Log in";
+  $("password").autocomplete = signup ? "new-password" : "current-password";
+  $("signupHelp").hidden = !signup; $("loginHelp").hidden = signup; $("loginErr").textContent = "";
+}
+$("tabLogin").onclick = () => tab(false);
+$("tabSignup").onclick = () => tab(true);
+$("loginForm").onsubmit = async e => {
+  e.preventDefault();
+  $("loginErr").textContent = ""; $("loginBtn").disabled = true;
+  try {
+    st = await post(signingUp ? "/api/signup" : "/api/login", {name: $("name").value, password: $("password").value});
+    if (!signingUp) $("password").value = "";
+    render();
+  } catch (err) { $("loginErr").textContent = err.message; }
+  $("loginBtn").disabled = false;
+};
+$("joinBtn").onclick = async () => { try { st = await post("/api/join"); render(); } catch (err) { $("proofMsg").textContent = err.message; } };
+$("addBtn").onclick = async () => { $("addErr").textContent = ""; try { st = await post("/api/add-account"); render(); } catch (err) { $("addErr").textContent = err.message; } };
+$("updBtn").onclick = async () => {
+  try { st = await post("/api/update"); render(); } catch (err) { $("updMsg").textContent = err.message; }
+};
+$("updatedOk").onclick = () => { updatedSeen = true; render(); };
+let checking = false, justChecked = false;
+async function checkUpdates() {
+  if (checking) return;
+  checking = true; render();
+  try { st = await post("/api/update/check"); justChecked = true; } catch (e) {}
+  checking = false; render();
+}
+$("checkUpd").onclick = e => { e.preventDefault(); checkUpdates(); };
+// Shown again (from the tray, alt-tab): look for a newer version, at most every few minutes
+let lastLook = Date.now();
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && Date.now() - lastLook > 5 * 60_000) { lastLook = Date.now(); checkUpdates(); }
+});
+$("logout").onclick = async () => { st = await post("/api/logout"); render(); };
+$("sendLive").onchange = () => setting({send_live: $("sendLive").checked}, "toggleErr");
+$("stream").onchange = () => setting({stream: $("stream").checked}, "toggleErr");
+$("mic").onchange = () => setting({mic: $("mic").checked});
+$("otherAudio").onchange = () => setting({other_audio: $("otherAudio").checked});
+$("logon").onchange = () => setting({start_at_logon: $("logon").checked});
+function showPreset(v) {
+  const opts = [...$("presetMenu").querySelectorAll("button")];
+  opts.forEach(b => b.classList.toggle("on", b.dataset.v === v));
+  const o = opts.find(b => b.dataset.v === v);
+  $("presetLabel").textContent = o ? o.firstChild.textContent + " (" + o.querySelector("small").textContent + ")" : v;
+}
+function presetMenu(open) { $("presetMenu").hidden = !open; $("presetDd").classList.toggle("open", open); }
+$("presetBtn").onclick = () => presetMenu($("presetMenu").hidden);
+$("presetMenu").onclick = e => {
+  const b = e.target.closest("button[data-v]");
+  if (!b) return;
+  presetMenu(false); showPreset(b.dataset.v);
+  setting({preset: b.dataset.v});
+};
+document.addEventListener("mousedown", e => { if (!e.target.closest("#presetDd")) presetMenu(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") presetMenu(false); });
+$("obsSave").onclick = () => setting({obs_path: $("obsPath").value});
+document.addEventListener("click", e => {
+  const a = e.target.closest("[data-open]");
+  if (a) { e.preventDefault(); post("/api/open", {what: a.dataset.open}); }
+});
+
+refresh();
+setInterval(refresh, 2000);
+</script>
+</body>
+</html>

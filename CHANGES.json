@@ -1,0 +1,111 @@
+[
+  {
+    "version": "0.1.17",
+    "date": "2026-10-26",
+    "changes": [
+      "Champ select chat on chudq.lol says who wrote each line by lane and champion (\"Bot · Jinx\") instead of \"Teammate\""
+    ]
+  },
+  {
+    "version": "0.1.16",
+    "date": "2026-10-24",
+    "changes": [
+      "A stream left running after chudQ restarted (an update mid-game) stops after the game again, instead of showing black on chudq.lol"
+    ]
+  },
+  {
+    "version": "0.1.15",
+    "date": "2026-10-24",
+    "changes": [
+      "Champ select team chat shows on chudq.lol (the lines weren't picked up)"
+    ]
+  },
+  {
+    "version": "0.1.14",
+    "date": "2026-10-24",
+    "changes": [
+      "Your gold on chudq.lol updates every few seconds instead of lagging up to 15 seconds behind"
+    ]
+  },
+  {
+    "version": "0.1.13",
+    "date": "2026-10-24",
+    "changes": [
+      "Your team's champ select chat shows on chudq.lol with the picks and bans"
+    ]
+  },
+  {
+    "version": "0.1.12",
+    "date": "2026-10-24",
+    "changes": [
+      "\"Check for updates\" at the bottom of the window, and chudQ looks by itself whenever you bring the window up"
+    ]
+  },
+  {
+    "version": "0.1.11",
+    "date": "2026-10-24",
+    "changes": [
+      "Fixes a black stream on laptops with two graphics chips: if the game shows up black for 30 seconds, chudQ switches to Windows' own capture by itself"
+    ]
+  },
+  {
+    "version": "0.1.10",
+    "date": "2026-10-24",
+    "changes": [
+      "Smoother updates: download progress, the installer's progress bar while it installs, and an \"Updated\" note with what's new when chudQ opens again"
+    ]
+  },
+  {
+    "version": "0.1.9",
+    "date": "2026-10-24",
+    "changes": [
+      "Quit in the tray menu closes chudQ completely (it kept running hidden)",
+      "Checks for a new version every time you open the window"
+    ]
+  },
+  {
+    "version": "0.1.8",
+    "date": "2026-10-24",
+    "changes": [
+      "Champ select timer on chudq.lol stays right when a new turn starts",
+      "No more \"OBS is not ready\" for a few seconds when chudQ starts OBS"
+    ]
+  },
+  {
+    "version": "0.1.7",
+    "date": "2026-10-24",
+    "changes": [
+      "The stream quality dropdown opens in chudQ's own style instead of Windows' grey list"
+    ]
+  },
+  {
+    "version": "0.1.6",
+    "date": "2026-10-24",
+    "changes": [
+      "The window looks like chudq.lol: same colours, fonts and buttons",
+      "A nicer stream quality dropdown"
+    ]
+  },
+  {
+    "version": "0.1.5",
+    "date": "2026-10-24",
+    "changes": [
+      "Champ select shows on chudq.lol: your team's picks and bans, live, before the game starts",
+      "Updates from inside the app: see what's new, then one click and it installs itself"
+    ]
+  },
+  {
+    "version": "0.1.4",
+    "date": "2026-10-24",
+    "changes": [
+      "Fixed the live data stopping in the Practice Tool (the target dummy)"
+    ]
+  },
+  {
+    "version": "0.1.3",
+    "date": "2026-10-24",
+    "changes": [
+      "\"All PC sound\" switch: stream Discord and music along with the game"
+    ]
+  }
+]
