@@ -16,12 +16,18 @@ python3 -m venv "$TMP/venv"
 url=$(curl -s "https://pypi.org/pypi/pyinstaller/$VERSION/json" |
       python3 -c "import json,sys; print([u['url'] for u in json.load(sys.stdin)['urls'] if u['packagetype']=='sdist'][0])")
 curl -sL "$url" | tar -xz -C "$TMP"
-# zig cc as a 64-bit Windows C compiler, minus the GNU linker options zig's linker doesn't take
+# zig cc as a 64-bit Windows C compiler, minus the GNU linker options zig's linker doesn't take, and with
+# -mwindows (the windowed bootloader, runw.exe) spelled so it does: zig drops -mwindows without a word,
+# and chudQ.exe then opens a console window that ends the app when it's closed
 cat > "$TMP/cc" <<CC
 #!/bin/bash
 args=()
 for a in "\$@"; do
-  case "\$a" in -Wl,--enable-auto-import|-Wl,-Bstatic|-Wl,-Bdynamic) ;; *) args+=("\$a");; esac
+  case "\$a" in
+    -Wl,--enable-auto-import|-Wl,-Bstatic|-Wl,-Bdynamic) ;;
+    -mwindows) args+=("-Wl,--subsystem,windows");;
+    *) args+=("\$a");;
+  esac
 done
 exec "$TMP/venv/bin/python" -m ziglang cc -target x86_64-windows-gnu -Wno-macro-redefined "\${args[@]}"
 CC
@@ -31,5 +37,16 @@ cd "$TMP/pyinstaller-$VERSION/bootloader"
 CC="$TMP/cc" AR="$TMP/ar" python3 ./waf configure all --clang --target-arch=64bit
 mkdir -p "$DEST"
 cp ../PyInstaller/bootloader/Windows-64bit-intel/*.exe "$DEST/"
+# the PE header's subsystem: 2 for runw*.exe (windowed), 3 for run*.exe (console)
+python3 - "$DEST" <<'PY'
+import struct, sys
+from pathlib import Path
+for exe in Path(sys.argv[1]).glob("*.exe"):
+    d = exe.read_bytes()
+    got = struct.unpack_from("<H", d, struct.unpack_from("<I", d, 0x3C)[0] + 24 + 68)[0]
+    want = 2 if exe.name.startswith("runw") else 3
+    if got != want:
+        sys.exit(f"{exe.name}: subsystem {got}, should be {want}")
+PY
 echo "$VERSION" > "$DEST/VERSION"
 ls -la "$DEST"

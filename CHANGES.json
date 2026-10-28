@@ -1,5 +1,12 @@
 [
   {
+    "version": "0.1.19",
+    "date": "2026-10-28",
+    "changes": [
+      "No more terminal window next to chudQ (0.1.18 opened one, and closing it quit the app); closing chudQ's window puts it in the tray again"
+    ]
+  },
+  {
     "version": "0.1.18",
     "date": "2026-10-27",
     "changes": [
